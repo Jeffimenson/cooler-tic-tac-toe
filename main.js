@@ -65,10 +65,12 @@ const game = (function(){
         new Array(3),
         new Array(3)
     ];
-    let nextMark = 'X';
+    let _nextMark = 'X';
+    let _nextBigCoord = null;
 
     const gridLength = 3;
-    function newGame(){
+    function newGame(){ //Used to initialize the first game and can clear the virtual game grid as well
+        _nextMark = 'X'; 
         for (let r = 0; r < gridLength; r++){
             for (let c = 0; c < gridLength; c++){
                 _bigGrid[r][c] = _MiniGrid(); 
@@ -80,13 +82,34 @@ const game = (function(){
         const [bigR, bigC] = bigCoord;
         const [miniR, miniC] = miniCoord;
         
-        _bigGrid[bigR][bigC].grid[miniR][miniC] = nextMark;
+        _bigGrid[bigR][bigC].grid[miniR][miniC] = _nextMark;
+        _nextBigCoord = (_bigGrid[bigR][bigC].takenBy !== null) ? miniCoord : null; 
         _changeNextMark();
-        console.log(_bigGrid);
+        console.log(_bigGrid[bigR][bigC].grid);
+    }
+
+    function isNextBigCoord(bigCoord){
+        return bigCoord === _nextBigCoord;
+    }
+
+    function checkMiniWin(bigCoord, miniCoord, mark){
+        let [col, row, diag, rdiag] = [0, 0, 0, 0]; 
+        const [bigR, bigC] = bigCoord;
+        const [miniR, miniC] = miniCoord;
+        const miniGrid = _bigGrid[bigR][bigC];
+        for (let i = 0; i < gridLength; i++){
+            if (miniGrid.grid[miniR][i] === mark) row++;
+            if (miniGrid.grid[i][miniC] === mark) col++;
+            if (miniGrid.grid[i][i] === mark) diag++;
+            if (miniGrid.grid[i][gridLength-1-i] === mark) rdiag++;
+        }
+        if (col === gridLength || row === gridLength  || diag === gridLength  || rdiag === gridLength ){
+            return true;
+        }
     }
 
     function _changeNextMark(){
-        nextMark = (nextMark === 'X') ? 'O' : 'X';
+        _nextMark = (_nextMark === 'X') ? 'O' : 'X';
     }
 
     function _MiniGrid(){
@@ -102,7 +125,8 @@ const game = (function(){
 
     return {
         newGame,
-        makeMark
+        makeMark,
+        isNextBigCoord
     }
 
 })();
