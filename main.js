@@ -104,7 +104,9 @@ const game = (function(){
             if (miniGrid.grid[i][gridLength-1-i] === mark) rdiag++;
         }
         if (col === gridLength || row === gridLength  || diag === gridLength  || rdiag === gridLength ){
-            return true;
+            return true; //Possibly do more than just return true or false
+        } else {
+            return false;
         }
     }
 
