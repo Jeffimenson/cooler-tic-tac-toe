@@ -1,0 +1,36 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10vh;
+}
+
+.big-grid {
+    width: 48rem;
+    height: 48rem;
+    
+    border: solid 2px black;
+    display: grid;
+    grid-template-columns: repeat(3, 3fr);
+    grid-template-rows: repeat(3, 3fr);
+}
+
+.mini-grid {
+    border: solid 2px salmon;
+    display: grid;    
+    grid-template-columns: repeat(3, 3fr);
+    grid-template-rows: repeat(3, 3fr);
+}
+
+.mini-cell {
+    border: solid 2px gold;
+}
