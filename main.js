@@ -17,6 +17,10 @@ const game = (function(){
         }
     }
 
+    function getMiniGrid(bigCoord){
+        return _bigGrid[bigCoord[0]][bigCoord[1]];
+    }
+
     function stepTurn(bigCoord, miniCoord){
         const result = {
             miniWinCoords: null,
@@ -24,13 +28,14 @@ const game = (function(){
             validMove: false,
             currMark: _nextMark
         }
-        if((bigCoord === _nextBigCoord || _nextBigCoord === null)){
+        if((_compareCoords(bigCoord, _nextBigCoord) || _nextBigCoord === null)){
             result.validMove = true;
+            const [R, C] = [bigCoord[0], bigCoord[1]]
+            const [r, c] = [miniCoord[0], miniCoord[1]];
             _makeMark(bigCoord, miniCoord);
-            _nextBigCoord = (_bigGrid[bigR][bigC].takenBy !== null) ? miniCoord : null; 
+            _nextBigCoord = (_bigGrid[r][c].takenBy === null) ? miniCoord : null; 
             const miniWinCoords = _getMiniWinCoords(bigCoord, miniCoord, _nextMark); 
             if (miniWinCoords !== null){
-                const [R, C] = [bigCoord[0], bigCoord[1]]
                 _bigGrid[R][C].takenBy = _nextMark;
                 result.miniWinCoords = miniWinCoords;
                 const bigWinCoords = _getBigWinCoords(bigCoord); 
@@ -39,6 +44,8 @@ const game = (function(){
                 }
             }
             _changeNextMark();
+        } else {
+            console.log("Can't move there lol");
         }
         return result;
     }
@@ -50,9 +57,11 @@ const game = (function(){
         _bigGrid[bigR][bigC].grid[miniR][miniC] = _nextMark;
     }
 
-    function isNextBigCoord(bigCoord){
-        return bigCoord === _nextBigCoord;
+    function _compareCoords(coord1, coord2){ //Only for arrays with two slots
+        if (coord1 === null || coord2 === null) return false;
+        return coord1[0] === coord2[0] && coord1[1] == coord2[1];
     }
+
 
     function _getMiniWinCoords(bigCoord, miniCoord, mark){
         let [col, row, diag, rdiag] = [0, 0, 0, 0]; 
@@ -85,6 +94,7 @@ const game = (function(){
     }
 
     function _getBigWinCoords(bigCoord, mark){
+        let [col, row, diag, rdiag] = [0, 0, 0, 0]; 
         const [bigR, bigC] = bigCoord;
         for (let i = 0; i < gridLength; i++){
             if (_bigGrid[bigR][i].takenBy === mark) row++;
@@ -128,8 +138,8 @@ const game = (function(){
 
     return {
         newGame,
-        makeMark,
-        isNextBigCoord
+        stepTurn,
+        getMiniGrid
     }
 
 })();
@@ -162,8 +172,8 @@ const display = (function(game){
 
     function _MiniGrid(R, C){
         const miniGrid = document.createElement('div');
-        miniGrid.setAttribute('data-bigRow', R);
-        miniGrid.setAttribute('data-bigCol', C);
+        miniGrid.setAttribute('data-bigrow', R);
+        miniGrid.setAttribute('data-bigcol', C);
         miniGrid.classList.add('mini-grid');
 
         const miniCells = [
@@ -178,8 +188,8 @@ const display = (function(game){
                 cell.setAttribute('type', 'button');
                 cell.classList.add('mini-cell');
                 cell.addEventListener('click', _onCellClick);
-                cell.setAttribute('data-miniRow', r);
-                cell.setAttribute('data-miniCol', c);
+                cell.setAttribute('data-minirow', r);
+                cell.setAttribute('data-minicol', c);
                 miniGrid.appendChild(cell);
                 miniCells[r][c] = cell;
             }
@@ -192,12 +202,22 @@ const display = (function(game){
 
     function _onCellClick(){
         const miniG = this.parentNode;
-        const bigCoord = [miniG.dataset.bigRow, miniG.dataset.bigC];
-        const miniCoord = [this.dataset.miniRow, this.dataset.miniCol];
+        const bigCoord = [+miniG.dataset.bigrow, +miniG.dataset.bigcol];
+        const miniCoord = [+this.dataset.minirow, +this.dataset.minicol];
+
 
         const stepAttempt = game.stepTurn(bigCoord, miniCoord);
         if (stepAttempt.validMove){
-
+            const gameMiniGrid = game.getMiniGrid(bigCoord);
+            const displayMiniGrid = _bigGrid.miniGrids[bigCoord[0]][bigCoord[1]];
+            for (let r = 0; r < gridLength; r++){
+                for (let c = 0; c < gridLength; c++){
+                    displayMiniGrid.cells[r][c].textContent = gameMiniGrid.grid[r][c];
+                }
+            }
+            if (stepAttempt.miniWinCoords !== null){
+                console.log(miniWinCoords);
+            }
         } 
 
         
