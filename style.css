@@ -45,3 +45,11 @@ button {
     font-size: 4rem;
     font-weight: 900;
 }
+
+.mini-cell.X {
+    background-color: red;
+}
+
+.mini-cell.O {
+    background-color: blue;
+}
