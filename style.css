@@ -65,3 +65,11 @@ button {
 .big-grid.next-grid .mini-grid:not(.taken) {
     border-color: gold;
 }
+
+.mini-grid.X .mini-cell:not(.X){
+    background-color: salmon;
+}
+
+.mini-grid.O .mini-cell:not(.O){
+    background-color: deepskyblue;
+}
