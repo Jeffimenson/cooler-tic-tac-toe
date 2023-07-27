@@ -31,7 +31,7 @@ const game = (function(){
         const [R, C] = [bigCoord[0], bigCoord[1]]
         const [r, c] = [miniCoord[0], miniCoord[1]];
 
-        if((_compareCoords(bigCoord, _nextBigCoord) || _nextBigCoord === null) && _bigGrid[R][C].takenBy === null){
+        if((_compareCoords(bigCoord, _nextBigCoord) || _nextBigCoord === null) && _bigGrid[R][C].takenBy === null && _bigGrid[R][C].grid[r][c] === undefined){
             result.validMove = true;
             _makeMark(bigCoord, miniCoord);
             const miniWinCoords = _getMiniWinCoords(bigCoord, miniCoord, _nextMark);
@@ -241,7 +241,10 @@ const display = (function(game){
         }
         document.querySelector('.next-grid').classList.remove('next-grid');
 
-        
+        const cellButtons = document.querySelectorAll('.big-grid button');
+        for (cellButton of cellButtons) {
+            cellButton.disabled = true;
+        }
     }
 
     function _onCellClick(){

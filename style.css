@@ -26,6 +26,7 @@ button {
     display: grid;
     grid-template-columns: repeat(3, 3fr);
     grid-template-rows: repeat(3, 3fr);
+    gap: 15px;
 }
 
 .mini-grid {
@@ -56,6 +57,10 @@ button {
 
 .mini-grid.taken {
     background-color: gray;
+}
+
+.mini-cell:disabled {
+    opacity: 0.4;    
 }
 
 .next-grid {
