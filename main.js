@@ -103,7 +103,7 @@ const game = (function(){
             if (_bigGrid[i][i].takenBy === mark) diag++;
             if (_bigGrid[i][gridLength-1-i].takenBy === mark) rdiag++;
         }
-                const winningPositions = [];
+        const winningPositions = [];
         switch(gridLength){
             case row:
                 for (let i = 0; i < gridLength; i++) { winningPositions.push([bigR, i]); }
@@ -161,6 +161,7 @@ const display = (function(game){
             new Array(3)
         ];       
         _bigGrid.grid.classList.add('big-grid');
+        _bigGrid.grid.classList.add('next-grid');
         _body.appendChild(_bigGrid.grid);
 
         for (let i = 0; i < gridLength; i++){
@@ -209,13 +210,27 @@ const display = (function(game){
                 displayMiniGrid.cells[r][c].textContent = gameMiniGrid.grid[r][c];
             }
         }
+
     }
 
-    function _displayMiniWin([R, C], miniWinCoords, winningMark){
+    function _displayMiniWinMarks([R, C], miniWinCoords, winningMark){
         const displayMiniGrid = _bigGrid.miniGrids[R][C];
         for (coord of miniWinCoords){
             const [r, c] = coord; 
             displayMiniGrid.cells[r][c].classList.add(winningMark);
+        }
+        displayMiniGrid.grid.classList.add('taken');
+    }
+
+    function _activateNextMiniGrid([r, c]){
+        const nextGameMiniGrid = game.getMiniGrid([r, c]);
+        const nextDisplayMiniGrid = _bigGrid.miniGrids[r][c];
+
+        document.querySelector('.next-grid').classList.remove('next-grid');
+        if (nextGameMiniGrid.takenBy === null){
+            nextDisplayMiniGrid.grid.classList.add('next-grid');
+        } else {
+            _bigGrid.grid.classList.add('next-grid');
         }
     }
 
@@ -227,9 +242,10 @@ const display = (function(game){
         const stepAttempt = game.stepTurn(bigCoord, miniCoord);
         if (stepAttempt.validMove){
             _updateMiniGridMarks(bigCoord);
+            _activateNextMiniGrid(miniCoord);
             const miniWinCoords = stepAttempt.miniWinCoords;
             if (miniWinCoords !== null){
-                _displayMiniWin(bigCoord, miniWinCoords, stepAttempt.mark);
+                _displayMiniWinMarks(bigCoord, miniWinCoords, stepAttempt.mark);
                 const bigWinCoords = stepAttempt.bigWinCoords;
                 if (bigWinCoords !== null){
                     console.log(`Big win coords: ${bigWinCoords}`);

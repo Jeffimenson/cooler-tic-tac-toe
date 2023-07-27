@@ -29,14 +29,14 @@ button {
 }
 
 .mini-grid {
-    border: solid 2px salmon;
+    border: solid 2px rgb(0, 0, 0);
     display: grid;    
     grid-template-columns: repeat(3, 3fr);
     grid-template-rows: repeat(3, 3fr);
 }
 
 .mini-cell {
-    border: solid 2px gold;
+    border: solid 2px rgb(0, 0, 0);
     display: grid;
     justify-content: center;
     align-content: center;
@@ -52,4 +52,16 @@ button {
 
 .mini-cell.O {
     background-color: blue;
+}
+
+.mini-grid.taken {
+    background-color: gray;
+}
+
+.next-grid {
+    border-color: gold;
+}
+
+.big-grid.next-grid .mini-grid:not(.taken) {
+    border-color: gold;
 }
