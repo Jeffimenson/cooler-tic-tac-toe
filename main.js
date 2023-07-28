@@ -309,5 +309,5 @@ const display = (function(game){
 })(game);
 
 
-game.newGame();
-display.generateDomElements();
+// game.newGame();
+// display.generateDomElements();

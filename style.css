@@ -12,12 +12,55 @@ body {
     flex-direction: column;
     align-items: center;
     padding-top: 10vh;
+
+    background-color:dimgrey;
 }
 
 button {
     background-color: inherit;
     font-family: inherit;
+    font-size: inherit;
 }
+
+.menu {
+    box-sizing: border-box;
+    width: 40rem;
+    height: 30rem;
+    border: black 4px outset;
+    background-color: gainsboro;
+    padding: 3rem;
+    font-size: 1.4rem;
+
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+
+    justify-items: center;
+}
+
+.menu h1 {
+    grid-column: 1 / -1;
+}
+
+.menu p {
+    grid-row: 2/ 3;
+    grid-column: 1 / -1;
+}
+
+.menu button {
+    width: 10rem;
+    height: 3rem;
+    
+    border: black 4px outset;
+    grid-row: 3/ 4;
+}
+    .menu button:hover{
+        background-color: rgb(206, 206, 206);
+    }
+    .menu button:active{
+        border-style: inset;
+    }
+
 
 .big-grid {
     width: 48rem;
