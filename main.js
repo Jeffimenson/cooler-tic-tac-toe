@@ -165,6 +165,8 @@ const display = (function(game){
         grid: null,
         miniGrids: null
     }; 
+    const _nextMarkDisplay = document.querySelector('#next-mark');
+    const _utilitiesRow = document.querySelector('utilities');
 
     function initializeMenuFunctionality(){
         const pvpSelect = document.querySelector('#pvp-select');
@@ -306,10 +308,12 @@ const display = (function(game){
                 const bigWinCoords = stepAttempt.bigWinCoords;
                 if (bigWinCoords !== null){
                     const winningMark = stepAttempt.lastMark;
+                    _nextMarkDisplay.textContent = '-';
                     _displayBigWin(bigWinCoords, stepAttempt.lastMark);
                     return;
                 }
             }
+            _nextMarkDisplay.textContent = (stepAttempt.lastMark === 'X') ? 'O' : 'X';
             _activateNextMiniGrid(stepAttempt.nextGridCoord);
         } 
     }
