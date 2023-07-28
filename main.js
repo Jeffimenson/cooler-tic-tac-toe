@@ -26,12 +26,13 @@ const game = (function(){
             miniWinCoords: null,
             bigWinCoords: null,
             validMove: false,
-            mark: _nextMark
+            mark: _nextMark,
+            nextGridCoord: null
         }
         const [R, C] = [bigCoord[0], bigCoord[1]]
         const [r, c] = [miniCoord[0], miniCoord[1]];
 
-        if((_compareCoords(bigCoord, _nextBigCoord) || _nextBigCoord === null) && _bigGrid[R][C].takenBy === null && _bigGrid[R][C].grid[r][c] === undefined){
+        if((_compareCoords(bigCoord, _nextBigCoord) || _nextBigCoord === null) && _bigGrid[R][C].takenBy === null && !_isMiniDraw([R, C]) && _bigGrid[R][C].grid[r][c] === undefined){ 
             result.validMove = true;
             _makeMark(bigCoord, miniCoord);
             const miniWinCoords = _getMiniWinCoords(bigCoord, miniCoord, _nextMark);
@@ -43,12 +44,24 @@ const game = (function(){
                     result.bigWinCoords = bigWinCoords;
                 }
             }
-            _nextBigCoord = (_bigGrid[r][c].takenBy === null) ? miniCoord : null; 
+            _nextBigCoord = (_bigGrid[r][c].takenBy === null && !_isMiniDraw([r, c])) ? miniCoord : null; 
+            result.nextGridCoord = _nextBigCoord;
             _changeNextMark();
         } else {
             console.log("Can't move there lol");
         }
         return result;
+    }
+
+    function _isMiniDraw([R, C]){
+        const miniGrid = _bigGrid[R][C];
+        let filledCells = 0;
+        for (let r = 0; r < gridLength; r++){
+            miniGrid.grid[r].forEach(cell => {
+                if (cell !== undefined) filledCells++; 
+            });
+        }
+        return filledCells === 9 && miniGrid.takenBy === null;
     }
 
     function _makeMark(bigCoord, miniCoord){
@@ -205,10 +218,20 @@ const display = (function(game){
     function _updateMiniGridMarks([R, C]){
         const gameMiniGrid = game.getMiniGrid([R, C]);
         const displayMiniGrid = _bigGrid.miniGrids[R][C];
+
+        let filledCells = 0;
         for (let r = 0; r < gridLength; r++){
             for (let c = 0; c < gridLength; c++){
-                displayMiniGrid.cells[r][c].textContent = gameMiniGrid.grid[r][c];
+                const gridVal = gameMiniGrid.grid[r][c];
+                if (gridVal !== undefined){
+                    displayMiniGrid.cells[r][c].textContent = gridVal;
+                    filledCells++; 
+                }
+                
             }
+        }
+        if (filledCells === 9 && gameMiniGrid.takenBy === null){
+            displayMiniGrid.grid.classList.add('taken'); //give a unique class later on 
         }
 
     }
@@ -222,16 +245,24 @@ const display = (function(game){
         displayMiniGrid.grid.classList.add('taken');
     }
 
-    function _activateNextMiniGrid([r, c]){
-        const nextGameMiniGrid = game.getMiniGrid([r, c]);
-        const nextDisplayMiniGrid = _bigGrid.miniGrids[r][c];
+    function _activateNextMiniGrid(coord){  
+        // document.querySelector('.next-grid').classList.remove('next-grid');
+        // if (nextGameMiniGrid.takenBy === null){
+        //     nextDisplayMiniGrid.grid.classList.add('next-grid');
+        // } else {
+        //     _bigGrid.grid.classList.add('next-grid');
+        // }
 
         document.querySelector('.next-grid').classList.remove('next-grid');
-        if (nextGameMiniGrid.takenBy === null){
-            nextDisplayMiniGrid.grid.classList.add('next-grid');
-        } else {
+        if (coord === null){
             _bigGrid.grid.classList.add('next-grid');
+        } else {
+            // const nextGameMiniGrid = game.getMiniGrid([R, C]);
+            const [R, C] = coord;
+            const nextDisplayMiniGrid = _bigGrid.miniGrids[R][C];
+            nextDisplayMiniGrid.grid.classList.add('next-grid');
         }
+        
     }
 
     function _displayBigWin(bigWinCoords, winningMark){
@@ -264,7 +295,7 @@ const display = (function(game){
                     return;
                 }
             }
-            _activateNextMiniGrid(miniCoord);
+            _activateNextMiniGrid(stepAttempt.nextGridCoord);
         } 
     }
 
