@@ -10,6 +10,7 @@ const game = (function(){
     const gridLength = 3;
     function newGame(){ //Used to initialize the first game and can clear the virtual game grid as well
         _nextMark = 'X'; 
+        _nextBigCoord = null;
         for (let r = 0; r < gridLength; r++){
             for (let c = 0; c < gridLength; c++){
                 _bigGrid[r][c] = _MiniGrid(); 
@@ -26,7 +27,7 @@ const game = (function(){
             miniWinCoords: null,
             bigWinCoords: null,
             validMove: false,
-            mark: _nextMark,
+            lastMark: _nextMark,
             nextGridCoord: null
         }
         const [R, C] = [bigCoord[0], bigCoord[1]]
@@ -183,6 +184,8 @@ const display = (function(game){
                 _bigGrid.grid.appendChild(_bigGrid.miniGrids[i][j].grid);
             }
         }
+        
+        
     } 
 
     function _MiniGrid(R, C){
@@ -288,10 +291,11 @@ const display = (function(game){
             _updateMiniGridMarks(bigCoord);
             const miniWinCoords = stepAttempt.miniWinCoords;
             if (miniWinCoords !== null){
-                _displayMiniWinMarks(bigCoord, miniWinCoords, stepAttempt.mark);
+                _displayMiniWinMarks(bigCoord, miniWinCoords, stepAttempt.lastMark);
                 const bigWinCoords = stepAttempt.bigWinCoords;
                 if (bigWinCoords !== null){
-                    _displayBigWin(bigWinCoords, stepAttempt.mark);
+                    const winningMark = stepAttempt.lastMark;
+                    _displayBigWin(bigWinCoords, stepAttempt.lastMark);
                     return;
                 }
             }

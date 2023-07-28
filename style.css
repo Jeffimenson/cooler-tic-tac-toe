@@ -30,14 +30,14 @@ button {
 }
 
 .mini-grid {
-    border: solid 2px rgb(0, 0, 0);
+    border: solid 4px rgb(0, 0, 0);
     display: grid;    
     grid-template-columns: repeat(3, 3fr);
     grid-template-rows: repeat(3, 3fr);
 }
 
 .mini-cell {
-    border: solid 2px rgb(0, 0, 0);
+    border: solid 4px rgb(0, 0, 0);
     display: grid;
     justify-content: center;
     align-content: center;
@@ -60,15 +60,16 @@ button {
 }
 
 .mini-cell:disabled {
-    opacity: 0.4;    
+    opacity: 1;    
+    color: black;
 }
 
-.next-grid {
-    border-color: gold;
+.mini-grid.next-grid {
+    box-shadow: 0 0 0px 5px gold;
 }
 
 .big-grid.next-grid .mini-grid:not(.taken) {
-    border-color: gold;
+    box-shadow: 0 0 0px 5px gold;
 }
 
 .mini-grid.X .mini-cell:not(.X){
