@@ -166,8 +166,19 @@ const display = (function(game){
         miniGrids: null
     }; 
 
+    function initializeMenuFunctionality(){
+        const pvpSelect = document.querySelector('#pvp-select');
+        const menu = document.querySelector('.menu');
+
+        pvpSelect.addEventListener('click', ()=>{
+            menu.style.display = 'none';
+            game.newGame();
+            generateDomBoard();
+        });
+    }
+
     const gridLength = 3;
-    function generateDomElements(){ //I might refactor this function in the future so it can be used to clear the grids and make new ones for a new game
+    function generateDomBoard(){ //I might refactor this function in the future so it can be used to clear the grids and make new ones for a new game
          _bigGrid.grid = document.createElement('div');
          _bigGrid.miniGrids = [
             new Array(3),
@@ -304,10 +315,10 @@ const display = (function(game){
     }
 
     return {
-        generateDomElements
+        generateDomBoard,
+        initializeMenuFunctionality
     };
 })(game);
 
 
-// game.newGame();
-// display.generateDomElements();
+display.initializeMenuFunctionality();
