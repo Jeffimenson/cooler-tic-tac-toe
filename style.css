@@ -26,60 +26,64 @@ button {
     border: none;
 }
 
-.menu {
+.starting-menu {
     box-sizing: border-box;
     width: 40rem;
     height: 30rem;
-    border: black 4px outset;
-    background-color: gainsboro;
+    border: gainsboro 12px ridge;
+    background-color: #c9c9c9;
     padding: 3rem;
     font-size: 1.4rem;
 
     display: grid;
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: 1fr 1fr 1fr;
     grid-template-columns: repeat(2, 1fr);
 
     justify-items: center;
 }
 
-.menu h1 {
+.starting-menu h1 {
     grid-column: 1 / -1;
+    align-self: self-end;
 }
 
-.menu p {
+.starting-menu p {
     grid-row: 2/ 3;
     grid-column: 1 / -1;
+    align-self: center;
 }
 
-.menu button {
+.starting-menu button {
     width: 10rem;
     height: 3rem;
     
-    border: black 4px outset;
+    border: gainsboro 6px outset;
+    background-color: #c9c9c9;
     grid-row: 3/ 4;
+    align-self: self-start;
 }
 
-/*Utilities*/
-.menu button:hover, .utilities button#open-menu:hover{
+.starting-menu button:hover, .utilities button#options:hover, .options-menu button:hover, .win-screen button:hover{
     background-color: rgb(206, 206, 206);
 }
-.menu button:active, .utilities button#open-menu:active{
+.starting-menu button:active, .utilities button#options:active, .options-menu button:active, .win-screen button:active{
     border-style: inset;
     background-color: rgb(187, 185, 185);
 }
 
+/*Utilities exclusive stuff*/
 .utilities {
     margin: 20px;
-    display: flex;
+    display: none;
     gap: 8px;
 }
 
 .utilities #next-mark-container {
     padding: 0 8px;
-    border: black 4px outset;
-    background-color: gainsboro;
+    border: gainsboro 6px outset;
+    background-color: #c9c9c9;
 
-    height: 2em;
+    height: 3em;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -88,32 +92,114 @@ button {
 }
 
 .utilities #next-mark-container #next-mark {
-    width: 1em;
-    height: 1em;
+    width: 2em;
+    height: 2em;
     display: inline-block;
+    box-sizing: border-box;
     text-align: center;
-    border: inset 2px rgb(46, 43, 43);
-    background-color: rgb(27, 24, 24);
+    border: inset 3px gainsboro;
+    background-color: rgb(34, 31, 31);
     color: rgb(255, 0, 0);
 
+    display: grid;
+    align-content: center;
+    justify-content: center;
 }
 
-.utilities button#open-menu{
+.utilities button#options {
     display: grid;
-    border: black 4px outset;
-    background-color: gainsboro;
+    border: gainsboro 6px outset;
+    background-color: #c9c9c9;
     justify-items: center;
     align-items: center;
 
-    width: 2em;
-    height: 2em;
+    width: 3em;
+    height: 3em;
 }
 
-.utilities #open-menu svg {
-    width: 1em;
-    height: 1em;
+.utilities #options svg {
+    width: 1.5em;
+    height: 1.5em;
     color: black;
 }
+/*...*/
+
+.dimmed-container { /*Also used to hold the win screen*/
+    width: 100vw;
+    height: 100vh;
+    padding-top: 10%;
+
+    background-color: rgba(0, 0, 0, 0.521);
+
+    display: none;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    
+}
+/*options menu*/
+.options-menu {
+    border: gainsboro 12px ridge;
+    background-color: #c9c9c9;
+
+    display: none;
+    flex-direction: column;
+    
+    padding: 1em;
+    gap: 1em;
+    box-sizing: border-box;
+    font-size: 1.5em;
+
+    width: 25rem;
+    height: 30rem;
+
+}
+
+.options-menu button{
+    border: gainsboro 6px outset;
+    background-color: #c9c9c9;
+    flex: 1;
+}
+
+.options-menu button#done {
+    width: 60%;
+    flex:none;
+    align-self: center;
+}
+.options-menu button#done svg {
+    width: 20%;
+    color:green;
+}
+/*...*/
+
+/*Win screen*/
+.win-screen {
+    border: gainsboro 12px ridge;
+    background-color: #c9c9c9;
+
+    width: 25rem;
+    height: 25rem;
+
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.win-screen svg {
+    width: 4em;
+    color: gold;
+    margin-bottom: 10%;
+}
+.win-screen button{
+    border: gainsboro 6px outset;
+    background-color: #c9c9c9;
+    padding: 0.5em;
+    font-size: 1.5em;
+    width: 60%;
+}
+
+/*...*/
 
 .big-grid {
     width: 48rem;
@@ -126,37 +212,65 @@ button {
 }
 
 .mini-grid {
-    border: solid 4px rgb(0, 0, 0);
     display: grid;    
     grid-template-columns: repeat(3, 3fr);
     grid-template-rows: repeat(3, 3fr);
 }
 
 .mini-cell {
-    border: solid 4px rgb(0, 0, 0);
+    box-sizing: border-box;
     display: grid;
     justify-content: center;
     align-content: center;
 
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: 900;
-}
 
+    border: gainsboro 6px outset;
+    background-color: #c9c9c9;
+}
+    .mini-cell:hover {
+        background-color: rgb(206, 206, 206);
+    }
+    .mini-cell:active {
+        border-style: inset;
+        background-color: rgb(187, 185, 185);
+    }
+    
+
+.mini-cell.X, .mini-cell.O {
+    border: rgb(128, 128, 128) 6px solid;
+    background-color: rgb(192, 191, 191);
+}
 .mini-cell.X {
-    background-color: rgb(126, 255, 40);
+    color: green;
 }
 
 .mini-cell.O {
-    background-color: rgb(0, 81, 255);
+    color:royalblue;
 }
 
-.mini-grid.taken {
-    background-color: gray;
+.mini-cell.taken-by-X {
+    background-color:rgb(103, 202, 3);
+    border-color: green;
 }
+
+.mini-cell.taken-by-O {
+    background-color:dodgerblue;
+    border-color: royalblue;
+}
+
+.mini-grid.taken-by-X .mini-cell:not(.taken-by-O):not(.taken-by-X),
+.mini-grid.taken-by-O .mini-cell:not(.taken-by-O):not(.taken-by-X),
+.mini-grid.taken .mini-cell:not(.taken-by-O):not(.taken-by-X) {
+    border: #585858 6px solid;
+    background-color: gray;
+    color: #585858;
+}
+
 
 .mini-cell:disabled {
     opacity: 1;    
-    color: black;
 }
 
 .mini-grid.next-grid {
@@ -167,10 +281,14 @@ button {
     box-shadow: 0 0 0px 5px gold;
 }
 
-.mini-grid.X .mini-cell:not(.X){
-    background-color: rgb(180, 250, 114);
+.mini-grid.taken-by-X .mini-cell:not(.taken-by-X):not(.taken-by-O){
+    background-color: rgb(158, 245, 77);
+    color:#97d65d;
+    border-color: #97d65d;
 }
 
-.mini-grid.O .mini-cell:not(.O){
+.mini-grid.taken-by-O .mini-cell:not(.taken-by-O):not(.taken-by-X){
     background-color: deepskyblue;
+    color: #00a7df;
+    border-color: #00a7df;
 }

@@ -166,23 +166,66 @@ const display = (function(game){
         miniGrids: null
     }; 
     const _nextMarkDisplay = document.querySelector('#next-mark');
-    const _utilitiesRow = document.querySelector('utilities');
+    const _utilitiesRow = document.querySelector('.utilities');
 
-    function initializeMenuFunctionality(){
+    function initializeUIFunctionality(){
         const pvpSelect = document.querySelector('#pvp-select');
-        const menu = document.querySelector('.menu');
+        const startingMenu = document.querySelector('.starting-menu');
 
         pvpSelect.addEventListener('click', ()=>{
-            menu.style.display = 'none';
+            startingMenu.style.display = 'none';
             game.newGame();
-            generateDomBoard();
+            _generateDomBoard();
+        });
+
+        const optionsSelect = document.querySelector('#options');
+        const optionsMenu = document.querySelector('.options-menu');
+        const dimmedContainer = document.querySelector('.dimmed-container');
+        const doneButton = document.querySelector('.options-menu button#done');
+        const newGameButtons = document.querySelectorAll('button.new-game')
+
+        optionsSelect.addEventListener('click', () => {
+            dimmedContainer.style.display = 'flex';
+            optionsMenu.style.display = 'flex';
+        });
+        doneButton.addEventListener('click', () => {
+            dimmedContainer.style.display = 'none';
+            optionsMenu.style.display = 'none';
+        });
+        newGameButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                dimmedContainer.style.display = 'none';
+                optionsMenu.style.display = 'none';
+                game.newGame();
+                _generateDomBoard();
+            });
         });
     }
 
+    function _displayWinScreen(winningMark){
+        const dimmedContainer = document.querySelector('.dimmed-container');
+        const optionsMenu = document.querySelector('.options-menu');
+        const winScreen = document.querySelector('.win-screen');
+        const winMarkDisplay = document.querySelector('.winner-mark');
+
+        dimmedContainer.style.display = 'flex';
+        optionsMenu.style.display = 'none';
+        winScreen.style.display = 'flex';
+        winMarkDisplay.textContent = winningMark;
+    }
+
     const gridLength = 3;
-    function generateDomBoard(){ //I might refactor this function in the future so it can be used to clear the grids and make new ones for a new game
-         _bigGrid.grid = document.createElement('div');
-         _bigGrid.miniGrids = [
+    function _generateDomBoard(){ 
+        if (_bigGrid.grid !== null) {
+            _body.removeChild(_bigGrid.grid);
+        } 
+        
+        _utilitiesRow.style.display = 'flex';
+        _nextMarkDisplay.textContent = 'X';
+        
+
+        _bigGrid.grid = document.createElement('div');
+        _bigGrid.miniGrids = [
             new Array(3),
             new Array(3),
             new Array(3)
@@ -240,7 +283,9 @@ const display = (function(game){
             for (let c = 0; c < gridLength; c++){
                 const gridVal = gameMiniGrid.grid[r][c];
                 if (gridVal !== undefined){
-                    displayMiniGrid.cells[r][c].textContent = gridVal;
+                    const currentCell = displayMiniGrid.cells[r][c];
+                    currentCell.textContent = gridVal;
+                    if (!currentCell.classList.contains(gridVal)) currentCell.classList.add(gridVal);
                     filledCells++; 
                 }
                 
@@ -256,9 +301,9 @@ const display = (function(game){
         const displayMiniGrid = _bigGrid.miniGrids[R][C];
         for (coord of miniWinCoords){
             const [r, c] = coord; 
-            displayMiniGrid.cells[r][c].classList.add(winningMark);
+            displayMiniGrid.cells[r][c].classList.add(`taken-by-${winningMark}`);
         }
-        displayMiniGrid.grid.classList.add('taken');
+        displayMiniGrid.grid.classList.add(`taken`);
     }
 
     function _activateNextMiniGrid(coord){  
@@ -284,7 +329,7 @@ const display = (function(game){
     function _displayBigWin(bigWinCoords, winningMark){
         for (coord of bigWinCoords){
             const [R, C] = coord;
-            _bigGrid.miniGrids[R][C].grid.classList.add(winningMark);
+            _bigGrid.miniGrids[R][C].grid.classList.add(`taken-by-${winningMark}`);
         }
         document.querySelector('.next-grid').classList.remove('next-grid');
 
@@ -310,6 +355,7 @@ const display = (function(game){
                     const winningMark = stepAttempt.lastMark;
                     _nextMarkDisplay.textContent = '-';
                     _displayBigWin(bigWinCoords, stepAttempt.lastMark);
+                    _displayWinScreen(winningMark);
                     return;
                 }
             }
@@ -319,10 +365,10 @@ const display = (function(game){
     }
 
     return {
-        generateDomBoard,
-        initializeMenuFunctionality
+        _generateDomBoard,
+        initializeUIFunctionality
     };
 })(game);
 
 
-display.initializeMenuFunctionality();
+display.initializeUIFunctionality();
