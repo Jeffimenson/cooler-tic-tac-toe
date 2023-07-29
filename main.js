@@ -240,18 +240,18 @@ const display = (function(game){
         });
     }
 
-    function _displayWinScreen(winningMark, winType){
+    function _displayWinScreen(winningMarkText, winTypeText){
         const dimmedContainer = document.querySelector('.dimmed-container');
         const optionsMenu = document.querySelector('.options-menu');
         const winScreen = document.querySelector('.win-screen');
         const winMarkDisplay = document.querySelector('.winner-mark');
         const winTypeDisplay = document.querySelector('.win-type')
 
-        winTypeDisplay.textContent = winType;
+        winTypeDisplay.textContent = winTypeText;
         dimmedContainer.style.display = 'flex';
         optionsMenu.style.display = 'none';
         winScreen.style.display = 'flex';
-        winMarkDisplay.textContent = winningMark;
+        winMarkDisplay.textContent = winningMarkText;
     }
 
     const gridLength = 3;
@@ -366,7 +366,7 @@ const display = (function(game){
         
     }
 
-    function _displayBigWin(bigWinCoords, winningMark){
+    function _displayBigWinMarks(bigWinCoords, winningMark){
         for (coord of bigWinCoords){
             const [R, C] = coord;
             _bigGrid.miniGrids[R][C].grid.classList.add(`taken-by-${winningMark}`);
@@ -377,6 +377,16 @@ const display = (function(game){
         for (cellButton of cellButtons) {
             cellButton.disabled = true;
         }
+    }
+
+    function _displayBigDraw(){
+        document.querySelector('.next-grid').classList.remove('next-grid');
+        const cellButtons = document.querySelectorAll('.big-grid button');
+        for (cellButton of cellButtons) {
+            cellButton.disabled = true;
+        }
+        _nextMarkDisplay.textContent = '-';
+        _displayWinScreen('its a draw.', "both of you lost lol");
     }
 
     function _onCellClick(){
@@ -393,15 +403,16 @@ const display = (function(game){
                 const bigWinCoords = stepAttempt.bigWinCoords;
                 if (bigWinCoords !== null){
                     const winningMark = stepAttempt.lastMark;
+                    const winningMarkText = `${winningMark} wins!`;
+                    const winTypeText = `by a ${stepAttempt.bigWinType}`;
                     _nextMarkDisplay.textContent = '-';
-                    _displayBigWin(bigWinCoords, winningMark);
-                    _displayWinScreen(winningMark, stepAttempt.bigWinType);
+                    _displayBigWinMarks(bigWinCoords, winningMark);
+                    _displayWinScreen(winningMarkText, winTypeText);
                     return;
                 }
             }
             if (stepAttempt.isBigDraw){
-                _nextMarkDisplay.textContent = '-';
-                _displayWinScreen('No one', "big fat draw since both of y'all lost lol");
+                _displayBigDraw();
                 return
             }
             _nextMarkDisplay.textContent = (stepAttempt.lastMark === 'X') ? 'O' : 'X';

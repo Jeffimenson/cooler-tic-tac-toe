@@ -129,7 +129,8 @@ button {
 
 .dimmed-container { /*Also used to hold the win screen*/
     width: 100vw;
-    height: 100vh;
+    height: 100%;
+    box-sizing: border-box;
     padding-top: 10%;
 
     background-color: rgba(0, 0, 0, 0.521);
@@ -193,6 +194,7 @@ button {
 
 .win-screen p {
     font-size: 1.5em;
+    text-align: center;
 }
 
 .win-screen button.new-game{
