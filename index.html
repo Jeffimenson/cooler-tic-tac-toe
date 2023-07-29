@@ -16,9 +16,9 @@
     </div>
 
     <div class="utilities">
-        <div id="next-mark-container">
+        <div class="next-mark-container">
             Next mark
-            <span id="next-mark">-</span>
+            <span class="next-mark">-</span>
         </div>
         <button type="button" id="options">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>dots-horizontal</title><path d="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z" fill="currentColor"/></svg>
@@ -30,16 +30,19 @@
             <button type="button" class="new-game">New game</button> <!--I orginally meant to give all buttons a unique id but this became an exception-->
             <button type="button" id="change-gamemode" disabled>Change gamemode</button>
             <button type="button" id="how-to-play" disabled>How to play</button>
-            <button type="button" id="done">
+            <button type="button" id="toggle-music" disabled>Music: <span class="music-condition">-</span></button>
+            <button type="button" class="done">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>check-bold</title><path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" /></svg>
             </button>
         </div>
+
         <div class="win-screen">
-            <h1><span class="winner-mark">-</span> is the winner!</h1>
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trophy-filled" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M17 3a1 1 0 0 1 .993 .883l.007 .117v2.17a3 3 0 1 1 0 5.659v.171a6.002 6.002 0 0 1 -5 5.917v2.083h3a1 1 0 0 1 .117 1.993l-.117 .007h-8a1 1 0 0 1 -.117 -1.993l.117 -.007h3v-2.083a6.002 6.002 0 0 1 -4.996 -5.692l-.004 -.225v-.171a3 3 0 0 1 -3.996 -2.653l-.003 -.176l.005 -.176a3 3 0 0 1 3.995 -2.654l-.001 -2.17a1 1 0 0 1 1 -1h10zm-12 5a1 1 0 1 0 0 2a1 1 0 0 0 0 -2zm14 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2z" stroke-width="0" fill="currentColor" />
-            </svg>
+            <button type="button" class="done">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            <h1><span class="winner-mark">-</span> wins!</h1>
+            <p>By a <span class="win-type">-</span></p>
             <button type="button" class="new-game">New game</button>
         </div>
     </div>

@@ -4,7 +4,8 @@
 }
 
 html {
-    font-family: Arial, Helvetica, sans-serif;
+    /* font-family: Arial, Helvetica, sans-serif; */
+    font-family: 'Courier New', Courier, monospace;
 }
 
 body {
@@ -63,13 +64,15 @@ button {
     align-self: self-start;
 }
 
-.starting-menu button:hover, .utilities button#options:hover, .options-menu button:hover, .win-screen button:hover{
+/*Button pseudoclass styling */
+.starting-menu button:hover, .utilities button#options:hover, .options-menu button:hover, .win-screen button.new-game:hover{
     background-color: rgb(206, 206, 206);
 }
-.starting-menu button:active, .utilities button#options:active, .options-menu button:active, .win-screen button:active{
+.starting-menu button:active, .utilities button#options:active, .options-menu button:active, .win-screen button.new-game:active{
     border-style: inset;
     background-color: rgb(187, 185, 185);
 }
+/*...*/
 
 /*Utilities exclusive stuff*/
 .utilities {
@@ -78,7 +81,7 @@ button {
     gap: 8px;
 }
 
-.utilities #next-mark-container {
+.utilities .next-mark-container {
     padding: 0 8px;
     border: gainsboro 6px outset;
     background-color: #c9c9c9;
@@ -91,7 +94,7 @@ button {
     gap: 8px;
 }
 
-.utilities #next-mark-container #next-mark {
+.utilities .next-mark-container .next-mark {
     width: 2em;
     height: 2em;
     display: inline-block;
@@ -161,12 +164,12 @@ button {
     flex: 1;
 }
 
-.options-menu button#done {
+.options-menu button.done {
     width: 60%;
     flex:none;
     align-self: center;
 }
-.options-menu button#done svg {
+.options-menu button.done svg {
     width: 20%;
     color:green;
 }
@@ -184,20 +187,47 @@ button {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
+    gap: 20px;
 }
 
-.win-screen svg {
-    width: 4em;
-    color: gold;
-    margin-bottom: 10%;
+.win-screen p {
+    font-size: 1.5em;
 }
-.win-screen button{
+
+.win-screen button.new-game{
     border: gainsboro 6px outset;
     background-color: #c9c9c9;
     padding: 0.5em;
     font-size: 1.5em;
     width: 60%;
+
+    margin-top: 80px;
+
 }
+
+.win-screen button.done {
+    width: 1.5em;
+    height: 1.5em;
+    padding: 0;
+    top: 0;
+    right: 0;
+    border: none;
+    background-color: inherit;
+    position: absolute;
+
+}
+.win-screen button.done svg {
+    color: rgb(82, 82, 82);
+    width: 1.5em;
+    height: 1.5em;
+}
+    .win-screen button.done:hover svg {
+        color: rgb(211, 54, 54);
+    }
+    .win-screen button.done:active svg{
+        color: rgb(187, 133, 133);
+    }
 
 /*...*/
 

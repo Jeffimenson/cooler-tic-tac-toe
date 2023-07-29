@@ -6,11 +6,14 @@ const game = (function(){
     ];
     let _nextMark = 'X';
     let _nextBigCoord = null;
+    let unavailableMinis = 0;
 
     const gridLength = 3;
     function newGame(){ //Used to initialize the first game and can clear the virtual game grid as well
         _nextMark = 'X'; 
         _nextBigCoord = null;
+        unavailableMinis = 0;
+        turnCount = 0;
         for (let r = 0; r < gridLength; r++){
             for (let c = 0; c < gridLength; c++){
                 _bigGrid[r][c] = _MiniGrid(); 
@@ -26,9 +29,11 @@ const game = (function(){
         const result = {
             miniWinCoords: null,
             bigWinCoords: null,
+            bigWinType: null,
             validMove: false,
             lastMark: _nextMark,
-            nextGridCoord: null
+            nextGridCoord: null,
+            isBigDraw: false
         }
         const [R, C] = [bigCoord[0], bigCoord[1]]
         const [r, c] = [miniCoord[0], miniCoord[1]];
@@ -38,21 +43,45 @@ const game = (function(){
             _makeMark(bigCoord, miniCoord);
             const miniWinCoords = _getMiniWinCoords(bigCoord, miniCoord, _nextMark);
             if (miniWinCoords !== null){
-                _bigGrid[R][C].takenBy = _nextMark;
+                const currMiniGrid = _bigGrid[R][C];
+                currMiniGrid.takenBy = _nextMark;
                 result.miniWinCoords = miniWinCoords;
-                const bigWinCoords = _getBigWinCoords(bigCoord, _nextMark); 
-                if (bigWinCoords !== null){
-                    result.bigWinCoords = bigWinCoords;
+
+                if (currMiniGrid.takenCells < gridLength**2){ //If this mini grid was already full), 
+                    //it would've already contributed to the unavailableMini's count in the makeMark function
+                    unavailableMinis++; 
+                }
+
+                const bigWinResult = _getBigWinCoords(bigCoord, _nextMark); 
+                if (bigWinResult !== null){
+                    result.bigWinCoords = bigWinResult.winningPositions;
+                    result.bigWinType = bigWinResult.winType;
                 }
             }
             _nextBigCoord = (_bigGrid[r][c].takenBy === null && !_isMiniDraw([r, c])) ? miniCoord : null; 
             result.nextGridCoord = _nextBigCoord;
             _changeNextMark();
+            
+            if (unavailableMinis === gridLength**2 && result.bigWinCoords === null){
+                result.isBigDraw = true;
+            }
         } else {
             console.log("Can't move there lol");
         }
         return result;
     }
+
+    // function _noMoreMoves(){
+    //     let unavailableMinis = 0;
+    //     _bigGrid.forEach((row) => {
+    //         row.forEach((miniGrid) => {
+    //             if (miniGrid.takenCells === 9 || miniGrid.takenBy !== null){
+    //                 unavailableMinis++;
+    //             }
+    //         });
+    //     });
+    //     return unavailableMinis === 9;
+    // }
 
     function _isMiniDraw([R, C]){
         const miniGrid = _bigGrid[R][C];
@@ -69,7 +98,13 @@ const game = (function(){
         const [bigR, bigC] = bigCoord;
         const [miniR, miniC] = miniCoord;
         
-        _bigGrid[bigR][bigC].grid[miniR][miniC] = _nextMark;
+        const currMiniGrid = _bigGrid[bigR][bigC];
+        currMiniGrid.grid[miniR][miniC] = _nextMark;
+        currMiniGrid.takenCells++; 
+
+        if (currMiniGrid.takenCells === gridLength**2){
+            unavailableMinis++;
+        }
     }
 
     function _compareCoords(coord1, coord2){ //Only for arrays with two slots
@@ -121,16 +156,16 @@ const game = (function(){
         switch(gridLength){
             case row:
                 for (let i = 0; i < gridLength; i++) { winningPositions.push([bigR, i]); }
-                return winningPositions;
+                return {winningPositions, winType: 'row'};
             case col:
                 for (let i = 0; i < gridLength; i++) { winningPositions.push([i, bigC]); }
-                return winningPositions;
+                return {winningPositions, winType: 'column'};
             case diag:
                 for (let i = 0; i < gridLength; i++) { winningPositions.push([i, i]); }
-                return winningPositions;
+                return {winningPositions, winType: 'diagnal'};
             case rdiag:
                 for (let i = 0; i < gridLength; i++) { winningPositions.push([i, gridLength-1-i]); }
-                return winningPositions;
+                return {winningPositions, winType: 'reverse diagnal'};
             default:
                 return null; 
         }
@@ -147,7 +182,8 @@ const game = (function(){
                 new Array(3),
                 new Array(3),
                 new Array(3)
-            ]
+            ],
+            takenCells: 0
         }
     }
 
@@ -165,7 +201,7 @@ const display = (function(game){
         grid: null,
         miniGrids: null
     }; 
-    const _nextMarkDisplay = document.querySelector('#next-mark');
+    const _nextMarkDisplay = document.querySelector('.next-mark');
     const _utilitiesRow = document.querySelector('.utilities');
 
     function initializeUIFunctionality(){
@@ -181,33 +217,37 @@ const display = (function(game){
         const optionsSelect = document.querySelector('#options');
         const optionsMenu = document.querySelector('.options-menu');
         const dimmedContainer = document.querySelector('.dimmed-container');
-        const doneButton = document.querySelector('.options-menu button#done');
+        const doneButtons = document.querySelectorAll('button.done');
         const newGameButtons = document.querySelectorAll('button.new-game')
 
         optionsSelect.addEventListener('click', () => {
             dimmedContainer.style.display = 'flex';
             optionsMenu.style.display = 'flex';
         });
-        doneButton.addEventListener('click', () => {
-            dimmedContainer.style.display = 'none';
-            optionsMenu.style.display = 'none';
+        doneButtons.forEach((button) => {
+                button.addEventListener('click', function(){
+                this.parentNode.style.display = 'none';
+                this.parentNode.parentNode.style.display = 'none';
+            });
         });
         newGameButtons.forEach((button) => {
-                button.addEventListener('click', () => {
-                dimmedContainer.style.display = 'none';
-                optionsMenu.style.display = 'none';
+                button.addEventListener('click', function(){
+                this.parentNode.style.display = 'none';
+                this.parentNode.parentNode.style.display = 'none';
                 game.newGame();
                 _generateDomBoard();
             });
         });
     }
 
-    function _displayWinScreen(winningMark){
+    function _displayWinScreen(winningMark, winType){
         const dimmedContainer = document.querySelector('.dimmed-container');
         const optionsMenu = document.querySelector('.options-menu');
         const winScreen = document.querySelector('.win-screen');
         const winMarkDisplay = document.querySelector('.winner-mark');
+        const winTypeDisplay = document.querySelector('.win-type')
 
+        winTypeDisplay.textContent = winType;
         dimmedContainer.style.display = 'flex';
         optionsMenu.style.display = 'none';
         winScreen.style.display = 'flex';
@@ -354,10 +394,15 @@ const display = (function(game){
                 if (bigWinCoords !== null){
                     const winningMark = stepAttempt.lastMark;
                     _nextMarkDisplay.textContent = '-';
-                    _displayBigWin(bigWinCoords, stepAttempt.lastMark);
-                    _displayWinScreen(winningMark);
+                    _displayBigWin(bigWinCoords, winningMark);
+                    _displayWinScreen(winningMark, stepAttempt.bigWinType);
                     return;
                 }
+            }
+            if (stepAttempt.isBigDraw){
+                _nextMarkDisplay.textContent = '-';
+                _displayWinScreen('No one', "big fat draw since both of y'all lost lol");
+                return
             }
             _nextMarkDisplay.textContent = (stepAttempt.lastMark === 'X') ? 'O' : 'X';
             _activateNextMiniGrid(stepAttempt.nextGridCoord);
@@ -365,7 +410,6 @@ const display = (function(game){
     }
 
     return {
-        _generateDomBoard,
         initializeUIFunctionality
     };
 })(game);
