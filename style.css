@@ -64,6 +64,16 @@ button {
     align-self: self-start;
 }
 
+.choose-mark-text {
+    display: none;
+}
+#choose-x {
+    display: none;
+}
+#choose-o {
+    display: none;
+}
+
 /*Button pseudoclass styling */
 .starting-menu button:hover, .utilities button#options:hover, .options-menu button:hover, .win-screen button.new-game:hover{
     background-color: rgb(206, 206, 206);

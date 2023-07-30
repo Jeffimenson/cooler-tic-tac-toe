@@ -279,8 +279,8 @@ const display = (function(game){
         const chooseGamemodeText = document.querySelector('.choose-gamemode-text');
 
         const chooseMarkText = document.querySelector('.choose-mark-text');
-        const chooseX = document.querySelector('.choose-x');
-        const chooseO = document.querySelector('.choose.o');
+        const chooseX = document.querySelector('#choose-x');
+        const chooseO = document.querySelector('#choose-o');
 
         pvpSelect.addEventListener('click', ()=>{
             startingMenu.style.display = 'none';
@@ -291,15 +291,41 @@ const display = (function(game){
         aiSelect.addEventListener('click', () => {
             aiSelect.style.display = 'none';
             pvpSelect.style.display = 'none';
+            chooseGamemodeText.style.display = 'none';
+
+            chooseMarkText.style.display = 'block';
             chooseX.style.display = 'block';
             chooseO.style.display = 'block';
-            game.newGame('ai', 'X');
-            _generateDomBoard();
-            if (game.getAIMark() === 'X') { //X always goes first
+            
+        });
+            chooseX.addEventListener('click', () => {
+                aiSelect.style.display = 'block';
+                pvpSelect.style.display = 'block';
+                chooseGamemodeText.style.display = 'block';
+
+                chooseMarkText.style.display = 'none';
+                chooseX.style.display = 'none';
+                chooseO.style.display = 'none';               
+                startingMenu.style.display = 'none';
+                game.newGame('ai', 'O');
+                _generateDomBoard();
+            });
+            chooseO.addEventListener('click', () => {
+                aiSelect.style.display = 'block';
+                pvpSelect.style.display = 'block';
+                chooseGamemodeText.style.display = 'block';
+
+                chooseMarkText.style.display = 'none';
+                chooseX.style.display = 'none';
+                chooseO.style.display = 'none';               
+                startingMenu.style.display = 'none';
+                game.newGame('ai', 'X');
+                _generateDomBoard();
+                //X always goes first so ai makes first move
                 const [bigAiCoord, miniAiCoord] = game.getAIMove(null);
                 _makeAiMove(bigAiCoord, miniAiCoord);
-            }
-        });
+            });
+
 
         const optionsSelect = document.querySelector('#options');
         const optionsMenu = document.querySelector('.options-menu');
