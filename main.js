@@ -4,16 +4,23 @@ const game = (function(){
         new Array(3),
         new Array(3)
     ];
+    let _gamemode = null;
     let _nextMark = 'X';
     let _nextBigCoord = null;
-    let unavailableMinis = 0;
+    let _unavailableMinis = 0;
+    let _aiMark = null;
 
     const gridLength = 3;
-    function newGame(){ //Used to initialize the first game and can clear the virtual game grid as well
+    function newGame(gamemode, aiMark){ //Used to initialize the first game and can clear the virtual game grid as well
         _nextMark = 'X'; 
         _nextBigCoord = null;
-        unavailableMinis = 0;
-        turnCount = 0;
+        _unavailableMinis = 0;
+        _gamemode = gamemode;
+        if (gamemode === 'ai') {
+            _aiMark = aiMark; 
+        } else {
+            _aiMark = null;     
+        }
         for (let r = 0; r < gridLength; r++){
             for (let c = 0; c < gridLength; c++){
                 _bigGrid[r][c] = _MiniGrid(); 
@@ -34,7 +41,7 @@ const game = (function(){
             lastMark: _nextMark,
             nextGridCoord: null,
             isBigDraw: false
-        }
+        };
         const [R, C] = [bigCoord[0], bigCoord[1]]
         const [r, c] = [miniCoord[0], miniCoord[1]];
 
@@ -49,7 +56,7 @@ const game = (function(){
 
                 if (currMiniGrid.takenCells < gridLength**2){ //If this mini grid was already full), 
                     //it would've already contributed to the unavailableMini's count in the makeMark function
-                    unavailableMinis++; 
+                    _unavailableMinis++; 
                 }
 
                 const bigWinResult = _getBigWinCoords(bigCoord, _nextMark); 
@@ -61,27 +68,41 @@ const game = (function(){
             _nextBigCoord = (_bigGrid[r][c].takenBy === null && !_isMiniDraw([r, c])) ? miniCoord : null; 
             result.nextGridCoord = _nextBigCoord;
             _changeNextMark();
+
             
-            if (unavailableMinis === gridLength**2 && result.bigWinCoords === null){
-                result.isBigDraw = true;
+            if (result.bigWinCoords === null){
+                if (_nextMark === _aiMark){ //Shouldn't need to check gamemode also since aiMark should be null if its the pvp gamemode
+                    getAIMove(_nextBigCoord);
+                }
+
+                if (_unavailableMinis === gridLength**2){
+                    result.isBigDraw = true;
+                }
             }
+            
         } else {
             console.log("Can't move there lol");
         }
         return result;
     }
 
-    // function _noMoreMoves(){
-    //     let unavailableMinis = 0;
-    //     _bigGrid.forEach((row) => {
-    //         row.forEach((miniGrid) => {
-    //             if (miniGrid.takenCells === 9 || miniGrid.takenBy !== null){
-    //                 unavailableMinis++;
-    //             }
-    //         });
-    //     });
-    //     return unavailableMinis === 9;
-    // }
+    function getAIMove(nextBigCoord){
+        if (nextBigCoord !== null){
+            const [R, C] = nextBigCoord;
+            const currMiniGrid = _bigGrid[R][C];
+            
+            const emptyCoords = []; 
+            for (let r = 0; r < gridLength; r++){
+                for (let c = 0; c < gridLength; c++){
+                    const row = currMiniGrid.grid[r];
+                    if (row[c] === undefined){
+                        emptyCoords.push([r, c]);
+                    }
+                }
+            }
+            console.log(emptyCoords);
+        }
+    }
 
     function _isMiniDraw([R, C]){
         const miniGrid = _bigGrid[R][C];
@@ -103,7 +124,7 @@ const game = (function(){
         currMiniGrid.takenCells++; 
 
         if (currMiniGrid.takenCells === gridLength**2){
-            unavailableMinis++;
+            _unavailableMinis++;
         }
     }
 
@@ -187,10 +208,15 @@ const game = (function(){
         }
     }
 
+    function getCurrentGamemode(){
+        return _gamemode;
+    }
+
     return {
         newGame,
         stepTurn,
-        getMiniGrid
+        getMiniGrid,
+        getCurrentGamemode
     }
 
 })();
@@ -206,11 +232,18 @@ const display = (function(game){
 
     function initializeUIFunctionality(){
         const pvpSelect = document.querySelector('#pvp-select');
+        const aiSelect = document.querySelector('#ai-select');
         const startingMenu = document.querySelector('.starting-menu');
 
         pvpSelect.addEventListener('click', ()=>{
             startingMenu.style.display = 'none';
-            game.newGame();
+            game.newGame('pvp');
+            _generateDomBoard();
+        });
+
+        aiSelect.addEventListener('click', () => {
+            startingMenu.style.display = 'none';
+            game.newGame('ai', 'O');
             _generateDomBoard();
         });
 
@@ -234,25 +267,12 @@ const display = (function(game){
                 button.addEventListener('click', function(){
                 this.parentNode.style.display = 'none';
                 this.parentNode.parentNode.style.display = 'none';
-                game.newGame();
+                game.newGame(game.getCurrentGamemode());
                 _generateDomBoard();
             });
         });
     }
 
-    function _displayWinScreen(winningMarkText, winTypeText){
-        const dimmedContainer = document.querySelector('.dimmed-container');
-        const optionsMenu = document.querySelector('.options-menu');
-        const winScreen = document.querySelector('.win-screen');
-        const winMarkDisplay = document.querySelector('.winner-mark');
-        const winTypeDisplay = document.querySelector('.win-type')
-
-        winTypeDisplay.textContent = winTypeText;
-        dimmedContainer.style.display = 'flex';
-        optionsMenu.style.display = 'none';
-        winScreen.style.display = 'flex';
-        winMarkDisplay.textContent = winningMarkText;
-    }
 
     const gridLength = 3;
     function _generateDomBoard(){ 
@@ -377,6 +397,20 @@ const display = (function(game){
         for (cellButton of cellButtons) {
             cellButton.disabled = true;
         }
+    }
+
+    function _displayWinScreen(winningMarkText, winTypeText){
+        const dimmedContainer = document.querySelector('.dimmed-container');
+        const optionsMenu = document.querySelector('.options-menu');
+        const winScreen = document.querySelector('.win-screen');
+        const winMarkDisplay = document.querySelector('.winner-mark');
+        const winTypeDisplay = document.querySelector('.win-type')
+
+        winTypeDisplay.textContent = winTypeText;
+        dimmedContainer.style.display = 'flex';
+        optionsMenu.style.display = 'none';
+        winScreen.style.display = 'flex';
+        winMarkDisplay.textContent = winningMarkText;
     }
 
     function _displayBigDraw(){
