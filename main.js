@@ -72,14 +72,13 @@ const game = (function(){
 
             
             if (result.bigWinCoords === null){
-                if (_nextMark === _aiMark){ //Shouldn't need to check gamemode also since aiMark should be null if its the pvp gamemode
+                if (_unavailableMinis === gridLength**2){
+                    result.isBigDraw = true;
+                } else if (_nextMark === _aiMark){ //Shouldn't need to check gamemode also since aiMark should be null if its the pvp gamemode
                     const moveCoords = getAIMove(_nextBigCoord);
                     result.aiMove = moveCoords;
                 }
 
-                if (_unavailableMinis === gridLength**2){
-                    result.isBigDraw = true;
-                }
             }
             
         } else {
@@ -542,7 +541,7 @@ const display = (function(game){
             }
             if (stepAttempt.isBigDraw){
                 _displayBigDraw();
-                return
+                return;
             }
             const nextMark = (stepAttempt.lastMark === 'X') ? 'O' : 'X';
             _nextMarkDisplay.textContent = nextMark;
