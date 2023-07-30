@@ -66,7 +66,7 @@ button {
 
 /*Button pseudoclass styling */
 .starting-menu button:hover, .utilities button#options:hover, .options-menu button:hover, .win-screen button.new-game:hover{
-    background-color: rgb(218, 216, 216);
+    background-color: rgb(206, 206, 206);
 }
 .starting-menu button:active, .utilities button#options:active, .options-menu button:active, .win-screen button.new-game:active{
     border-style: inset;

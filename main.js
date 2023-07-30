@@ -40,7 +40,8 @@ const game = (function(){
             validMove: false,
             lastMark: _nextMark,
             nextGridCoord: null,
-            isBigDraw: false
+            isBigDraw: false,
+            aiMove: null
         };
         const [R, C] = [bigCoord[0], bigCoord[1]]
         const [r, c] = [miniCoord[0], miniCoord[1]];
@@ -72,7 +73,8 @@ const game = (function(){
             
             if (result.bigWinCoords === null){
                 if (_nextMark === _aiMark){ //Shouldn't need to check gamemode also since aiMark should be null if its the pvp gamemode
-                    getAIMove(_nextBigCoord);
+                    const moveCoords = _getAIMove(_nextBigCoord);
+                    result.aiMove = moveCoords;
                 }
 
                 if (_unavailableMinis === gridLength**2){
@@ -86,7 +88,7 @@ const game = (function(){
         return result;
     }
 
-    function getAIMove(nextBigCoord){
+    function _getAIMove(nextBigCoord){
         if (nextBigCoord !== null){
             const [R, C] = nextBigCoord;
             const currMiniGrid = _bigGrid[R][C];
@@ -101,6 +103,9 @@ const game = (function(){
                 }
             }
             console.log(emptyCoords);
+            const randomIndex = Math.floor(Math.random() * emptyCoords.length)
+            const fullCoord = [nextBigCoord, emptyCoords[randomIndex]]
+            return fullCoord;
         }
     }
 
@@ -212,14 +217,22 @@ const game = (function(){
         return _gamemode;
     }
 
+    function getAIMark(){
+        return _aiMark;
+    }
+
     return {
         newGame,
         stepTurn,
         getMiniGrid,
-        getCurrentGamemode
+        getCurrentGamemode,
+        getAIMark
+
     }
 
 })();
+
+//========================================================================================
 
 const display = (function(game){
     const _body = document.querySelector('body');
@@ -449,8 +462,15 @@ const display = (function(game){
                 _displayBigDraw();
                 return
             }
-            _nextMarkDisplay.textContent = (stepAttempt.lastMark === 'X') ? 'O' : 'X';
-            _activateNextMiniGrid(stepAttempt.nextGridCoord);
+            const nextMark = (stepAttempt.lastMark === 'X') ? 'O' : 'X';
+            _nextMarkDisplay.textContent = nextMark;
+            if (nextMark === game.getAIMark()){
+                //AI step code
+                const [R, C] = stepAttempt.aiMove[0];
+                const [r, c] = stepAttempt.aiMove[1];
+            } else {
+                _activateNextMiniGrid(stepAttempt.nextGridCoord);
+            }
         } 
     }
 
