@@ -350,11 +350,16 @@ const display = (function(game){
 
                 const currGamemode = game.getCurrentGamemode();
                 if (currGamemode === 'ai'){
-                    game.newGame(currGamemode, 'O');
+                    game.newGame(currGamemode, game.getAIMark());
+                    _generateDomBoard();
+                    if (game.getAIMark() === 'X'){
+                        const [bigAiCoord, miniAiCoord] = game.getAIMove(null);
+                        _makeAiMove(bigAiCoord, miniAiCoord);
+                    }
                 } else {
                     game.newGame(currGamemode);
+                    _generateDomBoard();
                 }
-                _generateDomBoard();
             });
         });
     }
