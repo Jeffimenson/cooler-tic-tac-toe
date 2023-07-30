@@ -365,3 +365,13 @@ button {
     color: #00a7df;
     border-color: #00a7df;
 }
+
+@media (max-width: 700px) {
+    html {
+        font-size: 7px;
+    } 
+
+    .mini-cell {
+        font-size: 2em;
+    }
+}
