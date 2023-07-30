@@ -73,7 +73,7 @@ const game = (function(){
             
             if (result.bigWinCoords === null){
                 if (_nextMark === _aiMark){ //Shouldn't need to check gamemode also since aiMark should be null if its the pvp gamemode
-                    const moveCoords = _getAIMove(_nextBigCoord);
+                    const moveCoords = getAIMove(_nextBigCoord);
                     result.aiMove = moveCoords;
                 }
 
@@ -88,27 +88,55 @@ const game = (function(){
         return result;
     }
 
-    function _getAIMove(nextBigCoord){
+    function getAIMove(nextBigCoord){
         if (nextBigCoord !== null){
             const [R, C] = nextBigCoord;
             const currMiniGrid = _bigGrid[R][C];
+            const emptyCoords = _getAvailableMiniCoords(currMiniGrid);
             
-            const emptyCoords = []; 
-            for (let r = 0; r < gridLength; r++){
-                for (let c = 0; c < gridLength; c++){
-                    const row = currMiniGrid.grid[r];
-                    if (row[c] === undefined){
-                        emptyCoords.push([r, c]);
-                    }
-                }
-            }
-            console.log(emptyCoords);
             const randomIndex = Math.floor(Math.random() * emptyCoords.length)
             const fullCoord = [nextBigCoord, emptyCoords[randomIndex]]
             return fullCoord;
+        } else {
+            const emptyBigCoords = _getAvailableBigCoords();
+            const randomIndex = Math.floor(Math.random() * emptyBigCoords.length)
+            const randomBigCoord = emptyBigCoords[randomIndex];
+
+            const emptyMiniCoords = _getAvailableMiniCoords(_bigGrid[randomBigCoord[0]][randomBigCoord[1]]); 
+            const anotherRandomIndex = Math.floor(Math.random() * emptyMiniCoords.length)
+            const randomMiniCoord = emptyMiniCoords[anotherRandomIndex];
+
+            const fullCoord = [randomBigCoord, randomMiniCoord];
+            return fullCoord;
+
         }
     }
 
+    function _getAvailableBigCoords(){
+        const availableBigCoords = [];
+        for (let R = 0; R < gridLength; R++){
+            for (let C = 0; C < gridLength; C++){
+                const row = _bigGrid[R];
+                if (row[C].takenBy === null && row[C].takenCells < 9){
+                    availableBigCoords.push([R, C]);
+                }
+            }
+        } 
+        return availableBigCoords;
+    }
+
+    function _getAvailableMiniCoords(miniGrid){
+        const emptyCoords = []; 
+        for (let r = 0; r < gridLength; r++){
+            for (let c = 0; c < gridLength; c++){
+                const row = miniGrid.grid[r];
+                if (row[c] === undefined){
+                    emptyCoords.push([r, c]);
+                }
+            }
+        }
+        return emptyCoords;
+    }
     function _isMiniDraw([R, C]){
         const miniGrid = _bigGrid[R][C];
         let filledCells = 0;
@@ -226,7 +254,8 @@ const game = (function(){
         stepTurn,
         getMiniGrid,
         getCurrentGamemode,
-        getAIMark
+        getAIMark,
+        getAIMove
 
     }
 
@@ -247,6 +276,11 @@ const display = (function(game){
         const pvpSelect = document.querySelector('#pvp-select');
         const aiSelect = document.querySelector('#ai-select');
         const startingMenu = document.querySelector('.starting-menu');
+        const chooseGamemodeText = document.querySelector('.choose-gamemode-text');
+
+        const chooseMarkText = document.querySelector('.choose-mark-text');
+        const chooseX = document.querySelector('.choose-x');
+        const chooseO = document.querySelector('.choose.o');
 
         pvpSelect.addEventListener('click', ()=>{
             startingMenu.style.display = 'none';
@@ -255,9 +289,16 @@ const display = (function(game){
         });
 
         aiSelect.addEventListener('click', () => {
-            startingMenu.style.display = 'none';
-            game.newGame('ai', 'O');
+            aiSelect.style.display = 'none';
+            pvpSelect.style.display = 'none';
+            chooseX.style.display = 'block';
+            chooseO.style.display = 'block';
+            game.newGame('ai', 'X');
             _generateDomBoard();
+            if (game.getAIMark() === 'X') { //X always goes first
+                const [bigAiCoord, miniAiCoord] = game.getAIMove(null);
+                _makeAiMove(bigAiCoord, miniAiCoord);
+            }
         });
 
         const optionsSelect = document.querySelector('#options');
@@ -280,7 +321,13 @@ const display = (function(game){
                 button.addEventListener('click', function(){
                 this.parentNode.style.display = 'none';
                 this.parentNode.parentNode.style.display = 'none';
-                game.newGame(game.getCurrentGamemode());
+
+                const currGamemode = game.getCurrentGamemode();
+                if (currGamemode === 'ai'){
+                    game.newGame(currGamemode, 'O');
+                } else {
+                    game.newGame(currGamemode);
+                }
                 _generateDomBoard();
             });
         });
@@ -380,14 +427,7 @@ const display = (function(game){
     }
 
     function _activateNextMiniGrid(coord){  
-        // document.querySelector('.next-grid').classList.remove('next-grid');
-        // if (nextGameMiniGrid.takenBy === null){
-        //     nextDisplayMiniGrid.grid.classList.add('next-grid');
-        // } else {
-        //     _bigGrid.grid.classList.add('next-grid');
-        // }
-
-        document.querySelector('.next-grid').classList.remove('next-grid');
+        _removeNextGrid();
         if (coord === null){
             _bigGrid.grid.classList.add('next-grid');
         } else {
@@ -404,11 +444,18 @@ const display = (function(game){
             const [R, C] = coord;
             _bigGrid.miniGrids[R][C].grid.classList.add(`taken-by-${winningMark}`);
         }
-        document.querySelector('.next-grid').classList.remove('next-grid');
+        _removeNextGrid();
 
         const cellButtons = document.querySelectorAll('.big-grid button');
         for (cellButton of cellButtons) {
             cellButton.disabled = true;
+        }
+    }
+
+    function _removeNextGrid(){
+        const currentNextGrid = document.querySelector('.next-grid');
+        if (currentNextGrid !== null){
+            currentNextGrid.classList.remove('next-grid');
         }
     }
 
@@ -427,7 +474,7 @@ const display = (function(game){
     }
 
     function _displayBigDraw(){
-        document.querySelector('.next-grid').classList.remove('next-grid');
+        _removeNextGrid();
         const cellButtons = document.querySelectorAll('.big-grid button');
         for (cellButton of cellButtons) {
             cellButton.disabled = true;
@@ -442,6 +489,10 @@ const display = (function(game){
         const miniCoord = [+this.dataset.minirow, +this.dataset.minicol];
 
         const stepAttempt = game.stepTurn(bigCoord, miniCoord);
+        +_processStep(stepAttempt, bigCoord);
+    }
+
+    function _processStep(stepAttempt, bigCoord){
         if (stepAttempt.validMove){
             _updateMiniGridMarks(bigCoord);
             const miniWinCoords = stepAttempt.miniWinCoords;
@@ -466,18 +517,50 @@ const display = (function(game){
             _nextMarkDisplay.textContent = nextMark;
             if (nextMark === game.getAIMark()){
                 //AI step code
-                const [R, C] = stepAttempt.aiMove[0];
-                const [r, c] = stepAttempt.aiMove[1];
+                const bigAiCoord = stepAttempt.aiMove[0];
+                const miniAiCoord = stepAttempt.aiMove[1];
+
+                _makeAiMove(bigAiCoord, miniAiCoord);
             } else {
                 _activateNextMiniGrid(stepAttempt.nextGridCoord);
             }
         } 
     }
 
+    function _makeAiMove(bigAiCoord, miniAiCoord){
+        const aiStep = game.stepTurn(bigAiCoord, miniAiCoord);
+        _removeNextGrid(); 
+        _showAiMakingMove(bigAiCoord, miniAiCoord);
+        setTimeout(function(){
+            _processStep(aiStep, bigAiCoord);
+        }, 600);
+
+    }
+
+    function _showAiMakingMove(bigAiCoord, miniAiCoord){
+        const [R, C] = bigAiCoord;
+        const [r, c] = miniAiCoord;
+
+        const miniGrid = _bigGrid.miniGrids[R][C];
+        const cell = miniGrid.cells[r][c];
+
+        miniGrid.grid.classList.add('next-ai-grid');
+        cell.classList.add('ai-highlight');
+        setTimeout(function(){
+            cell.classList.add('ai-press');
+            setTimeout(function(){
+                miniGrid.grid.classList.remove('next-ai-grid');
+                cell.classList.remove('ai-highlight');
+                cell.classList.remove('ai-press');
+            }, 200);
+        }, 400);
+    }
+
     return {
         initializeUIFunctionality
     };
 })(game);
+
 
 
 display.initializeUIFunctionality();
