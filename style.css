@@ -24,13 +24,14 @@ button {
     background-color: inherit;
     font-family: inherit;
     font-size: inherit;
+    color: inherit;
     border: none;
 }
 
 .starting-menu {
     box-sizing: border-box;
-    width: 40rem;
-    height: 30rem;
+    width: 50rem;
+    height: 40rem;
     border: gainsboro 12px ridge;
     background-color: #c9c9c9;
     padding: 3rem;
@@ -46,17 +47,19 @@ button {
 .starting-menu h1 {
     grid-column: 1 / -1;
     align-self: self-end;
+    text-align: center;
 }
 
 .starting-menu p {
     grid-row: 2/ 3;
     grid-column: 1 / -1;
     align-self: center;
+    text-align: center;
 }
 
 .starting-menu button {
-    width: 10rem;
-    height: 3rem;
+    width: 9rem;
+    height: 4rem;
     
     border: gainsboro 6px outset;
     background-color: #c9c9c9;
@@ -90,6 +93,7 @@ button {
     margin: 20px;
     display: none;
     gap: 8px;
+    height: 3rem;
 }
 
 .utilities .next-mark-container {
@@ -97,7 +101,6 @@ button {
     border: gainsboro 6px outset;
     background-color: #c9c9c9;
 
-    height: 3em;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -128,7 +131,6 @@ button {
     align-items: center;
 
     width: 3em;
-    height: 3em;
 }
 
 .utilities #options svg {
@@ -371,7 +373,35 @@ button {
         font-size: 7px;
     } 
 
-    .mini-cell {
+    .starting-menu {
+        height: 70rem;
+    }
+
+    .starting-menu h1{
+        font-size: 4em;
+    }
+
+    .starting-menu p {
         font-size: 2em;
+    }
+
+    .starting-menu button {
+        width: 16rem;
+        height: 8rem;
+        font-size: 2rem;
+    }
+
+    .utilities {
+        height: 6rem;
+        font-size: 2rem;
+    }
+
+    .mini-cell {
+        font-size: 2rem;
+    }
+
+    .big-grid {
+        width: 52rem;
+        height: 52rem;
     }
 }
